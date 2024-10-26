@@ -11,8 +11,8 @@ enum obj_type {
     obj_type_camera,
 };
 struct i32_2 {
-    unsigned int x;
-    unsigned int y;
+    int x;
+    int y;
 };
 struct obj {
     enum obj_type type;
