@@ -33,6 +33,7 @@ void obj_update() {
 void obj_init() {
 }
 void global_update() {
+    obj_update();
 }
 void global_init() {
     obj_init();
