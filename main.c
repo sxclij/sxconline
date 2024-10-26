@@ -25,6 +25,8 @@ struct global {
     struct global_obj {
         struct obj data[obj_data_capacity];
         struct obj* free;
+        struct obj* origin;
+        struct obj* camera;
     } obj;
 };
 
@@ -49,6 +51,8 @@ void obj_init() {
     for (int i = 0; i < obj_data_capacity; i++) {
         obj_free(&global.obj.data[i]);
     }
+    global.obj.origin = obj_allocate();
+    global.obj.camera = obj_allocate();
 }
 void global_update() {
     obj_update();
