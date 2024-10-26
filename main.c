@@ -30,6 +30,16 @@ struct global {
 
 static struct global global;
 
+void obj_free(struct obj* o1) {
+    o1->prev = global.obj.free;
+    global.obj.free = global.obj.free->prev;
+    global.obj.free = o1;
+}
+struct obj* obj_alloc() {
+    struct obj* o1 = global.obj.free;
+    global.obj.free = global.obj.free->prev;
+    return o1;
+}
 void obj_update() {
 }
 void obj_init() {
