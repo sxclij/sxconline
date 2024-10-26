@@ -16,6 +16,7 @@ struct i32_2 {
 };
 struct obj {
     enum obj_type type;
+    enum bool is_allocated;
     struct i32_2 pos;
     struct obj* prev;
     struct obj* next;
@@ -31,18 +32,24 @@ struct global {
 static struct global global;
 
 void obj_free(struct obj* o1) {
+    o1->is_allocated = false;
     o1->prev = global.obj.free;
     global.obj.free = global.obj.free->prev;
     global.obj.free = o1;
 }
-struct obj* obj_alloc() {
+struct obj* obj_allocate() {
     struct obj* o1 = global.obj.free;
+    o1->is_allocated = true;
     global.obj.free = global.obj.free->prev;
     return o1;
 }
 void obj_update() {
 }
 void obj_init() {
+    global.obj.free = global.obj.data;
+    for (int i = 0; i < obj_data_capacity; i++) {
+        obj_free(&global.obj.data[i]);
+    }
 }
 void global_update() {
     obj_update();
