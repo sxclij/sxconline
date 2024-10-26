@@ -21,7 +21,9 @@ struct obj {
     struct obj* next;
 };
 struct global {
-    struct obj obj_data[obj_data_capacity];
+    struct {
+        struct obj data[obj_data_capacity];
+    } obj;
 };
 
 int main() {
