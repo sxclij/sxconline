@@ -25,7 +25,6 @@ struct global {
     struct global_obj {
         struct obj data[obj_data_capacity];
         struct obj* free;
-        struct obj* head;
     } obj;
 };
 
