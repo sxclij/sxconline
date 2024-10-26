@@ -57,7 +57,9 @@ struct obj* obj_spawn(enum type type) {
     struct obj* o1 = global.obj.free;
     o1->is_allocated = true;
     global.obj.free = global.obj.free->prev;
-    global.table.type[o1->type].init(o1);
+    if (global.table.type[o1->type].init != NULL) {
+        global.table.type[o1->type].init(o1);
+    }
     return o1;
 }
 void obj_update() {
@@ -66,7 +68,9 @@ void obj_update() {
         if (!o1->is_allocated) {
             continue;
         }
-        global.table.type[o1->type].update(o1);
+        if (global.table.type[o1->type].update != NULL) {
+            global.table.type[o1->type].update(o1);
+        }
     }
 }
 void obj_init() {
@@ -77,11 +81,32 @@ void obj_init() {
     global.obj.origin = obj_spawn(type_air);
     global.obj.camera = obj_spawn(type_camera);
 }
+void table_init() {
+    global.table.type[type_null] = (struct global_table_type){
+        .name = "null",
+        .display_ch = '\0',
+        .init = NULL,
+        .update = NULL,
+    };
+    global.table.type[type_air] = (struct global_table_type){
+        .name = "air",
+        .display_ch = ' ',
+        .init = NULL,
+        .update = NULL,
+    };
+    global.table.type[type_camera] = (struct global_table_type){
+        .name = "camera",
+        .display_ch = '\0',
+        .init = NULL,
+        .update = NULL,
+    };
+}
 void global_update() {
     obj_update();
     usleep(10000);
 }
 void global_init() {
+    table_init();
     obj_init();
 }
 int main() {
