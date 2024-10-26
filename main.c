@@ -1,21 +1,23 @@
 #include <unistd.h>
 
-#define obj_data_capacity (1 << 16)
+#define obj_data_size (1 << 16)
+#define table_objtype_size (1 << 8)
+#define buf_kakkokari_size (1 << 16)
 
 enum bool {
     false = 0,
     true = 1,
 };
-enum obj_type {
-    obj_type_null,
-    obj_type_camera,
+enum objtype {
+    objtype_null,
+    objtype_camera,
 };
 struct i32_2 {
     int x;
     int y;
 };
 struct obj {
-    enum obj_type type;
+    enum objtype type;
     enum bool is_allocated;
     struct i32_2 pos;
     struct obj* prev;
@@ -23,11 +25,23 @@ struct obj {
 };
 struct global {
     struct global_obj {
-        struct obj data[obj_data_capacity];
+        struct obj data[obj_data_size];
         struct obj* free;
         struct obj* origin;
         struct obj* camera;
     } obj;
+    struct global_table {
+        struct global_table_objtype {
+            const char* name;
+            char display_ch;
+            void (*init)(struct obj*);
+            void (*update)(struct obj*);
+        } objtype[table_objtype_size];
+    } table;
+    struct global_term {
+        struct i32_2 ws;
+        char buf[buf_kakkokari_size];
+    } term;
 };
 
 static struct global global;
@@ -45,7 +59,7 @@ struct obj* obj_allocate() {
     return o1;
 }
 void obj_update() {
-    for (int i = 0; i < obj_data_capacity; i++) {
+    for (int i = 0; i < obj_data_size; i++) {
         struct obj* o1 = &global.obj.data[i];
         if (!o1->is_allocated) {
             continue;
@@ -54,7 +68,7 @@ void obj_update() {
 }
 void obj_init() {
     global.obj.free = global.obj.data;
-    for (int i = 0; i < obj_data_capacity; i++) {
+    for (int i = 0; i < obj_data_size; i++) {
         obj_free(&global.obj.data[i]);
     }
     global.obj.origin = obj_allocate();
