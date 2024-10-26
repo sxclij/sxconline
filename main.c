@@ -1,5 +1,6 @@
 #include <unistd.h>
 
+#define obj_data_capacity (1 << 16)
 
 enum bool {
     false = 0,
@@ -9,15 +10,18 @@ enum obj_type {
     obj_type_null,
     obj_type_camera,
 };
-struct f64_2 {
-    double x;
-    double y;
+struct i32_2 {
+    unsigned int x;
+    unsigned int y;
 };
 struct obj {
     enum obj_type type;
-    struct f64_2 pos;
+    struct i32_2 pos;
     struct obj* prev;
     struct obj* next;
+};
+struct global {
+    struct obj obj_data[obj_data_capacity];
 };
 
 int main() {
