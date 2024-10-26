@@ -45,6 +45,12 @@ struct obj* obj_allocate() {
     return o1;
 }
 void obj_update() {
+    for (int i = 0; i < obj_data_capacity; i++) {
+        struct obj* o1 = &global.obj.data[i];
+        if (!o1->is_allocated) {
+            continue;
+        }
+    }
 }
 void obj_init() {
     global.obj.free = global.obj.data;
@@ -56,11 +62,11 @@ void obj_init() {
 }
 void global_update() {
     obj_update();
+    usleep(10000);
 }
 void global_init() {
     obj_init();
 }
-
 int main() {
     global_init();
     while (1) {
