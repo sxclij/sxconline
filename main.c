@@ -64,6 +64,7 @@ void obj_update() {
         if (!o1->is_allocated) {
             continue;
         }
+        global.table.objtype[o1->type].update(o1);
     }
 }
 void obj_init() {
