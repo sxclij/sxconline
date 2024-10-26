@@ -26,7 +26,22 @@ struct global {
     } obj;
 };
 
+static struct global global;
+
+void obj_update() {
+}
+void obj_init() {
+}
+void global_update() {
+}
+void global_init() {
+    obj_init();
+}
+
 int main() {
-    write(1, "good morning world\n", 19);
+    global_init();
+    while (1) {
+        global_update();
+    }
     return 0;
 }
