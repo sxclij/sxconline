@@ -17,19 +17,23 @@ struct i32_2 {
     int x;
     int y;
 };
+struct block {
+    enum type type;
+    char size;
+};
+struct chunk {
+    struct block block[chunk_size][chunk_size];
+};
+struct world {
+    struct chunk chunk[world_size / chunk_size][world_size / chunk_size];
+};
+struct term {
+    struct i32_2 ws;
+    char buf[buf_kakkokari_size];
+};
 struct global {
-    struct global_world {
-        struct global_chunk {
-            struct global_block {
-                enum type type;
-                char size;
-            } block[chunk_size][chunk_size];
-        } chunk[world_size / chunk_size][world_size / chunk_size];
-    } world;
-    struct global_term {
-        struct i32_2 ws;
-        char buf[buf_kakkokari_size];
-    } term;
+    struct world world;
+    struct term term;
 };
 
 static struct global global;
