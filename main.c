@@ -34,6 +34,7 @@ struct term {
 struct global {
     struct world world;
     struct term term;
+    struct i32_2 camera;
 };
 
 static struct global global;
