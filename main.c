@@ -35,6 +35,7 @@ struct global {
     struct world world;
     struct term term;
     struct i32_2 camera;
+    struct i32_2 cursor;
 };
 
 static struct global global;
@@ -43,6 +44,8 @@ void global_update() {
     usleep(10000);
 }
 void global_init() {
+    global.camera = (struct i32_2){world_size / 2, world_size / 2};
+    global.cursor = (struct i32_2){world_size / 2, world_size / 2};
 }
 int main() {
     global_init();
