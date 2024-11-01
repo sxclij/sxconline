@@ -53,7 +53,7 @@ void term_update() {
         int display_y = 0;
         for (int j = 0; j < global.term.ws.ws_col; j++) {
             int display_x = 0;
-            write(STDOUT_FILENO, "a", 1);
+            write(STDOUT_FILENO, ".", 1);
         }
     }
 }
