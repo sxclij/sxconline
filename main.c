@@ -59,7 +59,17 @@ void term_render_dot(int x, int y) {
         write(STDOUT_FILENO, "@", 1);
     } else {
         struct block* block = block_get(x, y);
-        write(STDOUT_FILENO, ".", 1);
+        if (block->size == 4) {
+            write(STDOUT_FILENO, "4", 1);
+        } else if (block->size == 3) {
+            write(STDOUT_FILENO, "3", 1);
+        } else if (block->size == 2) {
+            write(STDOUT_FILENO, "2", 1);
+        } else if (block->size == 1) {
+            write(STDOUT_FILENO, "1", 1);
+        } else  {
+            write(STDOUT_FILENO, " ", 1);
+        }
     }
 }
 void term_render() {
@@ -83,6 +93,8 @@ void global_init() {
     // global.cursor = (struct i32_2){world_size / 2, world_size / 2};
     global.camera = (struct i32_2){0, 0};
     global.cursor = (struct i32_2){0, 0};
+    block_set(10, 3, type_stone, 3);
+    block_set(6, 7, type_stone, 1);
 }
 int main() {
     global_init();
