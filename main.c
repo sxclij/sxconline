@@ -50,10 +50,15 @@ void term_update() {
     ioctl(STDOUT_FILENO, TIOCGWINSZ, &global.term.ws);
     write(STDOUT_FILENO, "\x1b[1;1H", 6);
     for (int i = 0; i < global.term.ws.ws_row; i++) {
-        int display_y = 0;
         for (int j = 0; j < global.term.ws.ws_col; j++) {
-            int display_x = 0;
-            write(STDOUT_FILENO, ".", 1);
+            int display_x = global.camera.x - (global.term.ws.ws_col / 2) + j;
+            int display_y = global.camera.y + (global.term.ws.ws_row / 2) - i;
+            if (display_x < 0 || world_size <= display_x || display_y < 0 || world_size <= display_y) {
+                write(STDOUT_FILENO, "@", 1);
+            } else {
+                char ch = 
+                write(STDOUT_FILENO, ".", 1);
+            }
         }
     }
 }
@@ -62,8 +67,10 @@ void global_update() {
     usleep(10000);
 }
 void global_init() {
-    global.camera = (struct i32_2){world_size / 2, world_size / 2};
-    global.cursor = (struct i32_2){world_size / 2, world_size / 2};
+    // global.camera = (struct i32_2){world_size / 2, world_size / 2};
+    // global.cursor = (struct i32_2){world_size / 2, world_size / 2};
+    global.camera = (struct i32_2){0, 0};
+    global.cursor = (struct i32_2){0, 0};
 }
 int main() {
     global_init();
