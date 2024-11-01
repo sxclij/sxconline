@@ -47,7 +47,11 @@ struct global {
 static struct global global;
 
 struct block* block_get(int x, int y) {
-    return &global.world.chunk[x / world_size][y / world_size].block[x % world_size][y % world_size];
+    if (x < 0 || world_size <= x || y < 0 || world_size <= y) {
+        return NULL;
+    } else {
+        return &global.world.chunk[x / world_size][y / world_size].block[x % world_size][y % world_size];
+    }
 }
 void block_set(int x, int y, enum type type, char size) {
     struct block* block = block_get(x, y);
@@ -55,21 +59,21 @@ void block_set(int x, int y, enum type type, char size) {
     block->size = size;
 }
 void term_render_dot(int x, int y) {
-    if (x < 0 || world_size <= x || y < 0 || world_size <= y) {
+    struct block* block = block_get(x, y);
+    if (block == NULL) {
         write(STDOUT_FILENO, "@", 1);
+        return;
+    }
+    if (block->size == 4) {
+        write(STDOUT_FILENO, "4", 1);
+    } else if (block->size == 3) {
+        write(STDOUT_FILENO, "3", 1);
+    } else if (block->size == 2) {
+        write(STDOUT_FILENO, "2", 1);
+    } else if (block->size == 1) {
+        write(STDOUT_FILENO, "1", 1);
     } else {
-        struct block* block = block_get(x, y);
-        if (block->size == 4) {
-            write(STDOUT_FILENO, "4", 1);
-        } else if (block->size == 3) {
-            write(STDOUT_FILENO, "3", 1);
-        } else if (block->size == 2) {
-            write(STDOUT_FILENO, "2", 1);
-        } else if (block->size == 1) {
-            write(STDOUT_FILENO, "1", 1);
-        } else  {
-            write(STDOUT_FILENO, " ", 1);
-        }
+        write(STDOUT_FILENO, " ", 1);
     }
 }
 void term_render() {
