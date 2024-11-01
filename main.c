@@ -1,9 +1,10 @@
+#include <sys/ioctl.h>
 #include <unistd.h>
 
 #define world_size (1 << 14)
 #define chunk_size (1 << 8)
 #define table_type_size (1 << 8)
-#define term_size (1 << 8)
+#define term_size (1 << 10)
 #define buf_kakkokari_size (1 << 16)
 
 enum bool {
@@ -34,8 +35,7 @@ struct term_bit {
     char color;
 };
 struct term {
-    struct i32_2 ws;
-    struct term_bit display[term_size][term_size];
+    struct winsize ws;
 };
 struct global {
     struct world world;
@@ -46,11 +46,19 @@ struct global {
 
 static struct global global;
 
-void render() {
-
+void term_update() {
+    ioctl(STDOUT_FILENO, TIOCGWINSZ, &global.term.ws);
+    write(STDOUT_FILENO, "\x1b[1;1H", 6);
+    for (int i = 0; i < global.term.ws.ws_row; i++) {
+        int display_y = 0;
+        for (int j = 0; j < global.term.ws.ws_col; j++) {
+            int display_x = 0;
+            write(STDOUT_FILENO, "a", 1);
+        }
+    }
 }
 void global_update() {
-    render();
+    term_update();
     usleep(10000);
 }
 void global_init() {
