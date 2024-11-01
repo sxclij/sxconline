@@ -3,6 +3,7 @@
 #define world_size (1 << 14)
 #define chunk_size (1 << 8)
 #define table_type_size (1 << 8)
+#define term_size (1 << 8)
 #define buf_kakkokari_size (1 << 16)
 
 enum bool {
@@ -12,6 +13,7 @@ enum bool {
 enum type {
     type_null,
     type_air,
+    type_stone,
 };
 struct i32_2 {
     int x;
@@ -27,9 +29,13 @@ struct chunk {
 struct world {
     struct chunk chunk[world_size / chunk_size][world_size / chunk_size];
 };
+struct term_bit {
+    char ch;
+    char color;
+};
 struct term {
     struct i32_2 ws;
-    char buf[buf_kakkokari_size];
+    struct term_bit display[term_size][term_size];
 };
 struct global {
     struct world world;
@@ -40,7 +46,11 @@ struct global {
 
 static struct global global;
 
+void render() {
+
+}
 void global_update() {
+    render();
     usleep(10000);
 }
 void global_init() {
