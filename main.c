@@ -5,6 +5,7 @@
 #define chunk_size (1 << 8)
 #define table_type_size (1 << 8)
 #define term_size (1 << 10)
+#define term_buf_size (1 << 16)
 #define buf_kakkokari_size (1 << 16)
 
 enum bool {
@@ -36,6 +37,8 @@ struct term_bit {
 };
 struct term {
     struct winsize ws;
+    char buf[buf_kakkokari_size];
+    int buf_size;
 };
 struct global {
     struct world world;
@@ -58,31 +61,58 @@ void block_set(int x, int y, enum type type, char size) {
     block->type = type;
     block->size = size;
 }
+void world_init() {
+    for (int i = 0; i < world_size; i++) {
+        for (int j = 0; j < world_size; j++) {
+            block_set(i, j, type_air, 0);
+        }
+    }
+    block_set(10, 3, type_stone, 3);
+    block_set(6, 7, type_stone, 1);
+}
+void term_render_write(const char* str, int n) {
+    for (int i = 0; i < n; i++) {
+        global.term.buf[global.term.buf_size + i] = str[i];
+    }
+    global.term.buf_size += n;
+}
 void term_render_dot(int x, int y) {
     struct block* block = block_get(x, y);
     if (block == NULL) {
-        write(STDOUT_FILENO, "@", 1);
+        term_render_write("\x1b[40m", 5);
+        term_render_write("@@", 2);
         return;
     }
+    if (block->type == type_air) {
+        term_render_write("\x1b[40m", 5);
+    } else if (block->type == type_stone) {
+        term_render_write("\x1b[43m", 5);
+    }
     if (block->size == 4) {
-        write(STDOUT_FILENO, "4", 1);
+        term_render_write("04", 2);
     } else if (block->size == 3) {
-        write(STDOUT_FILENO, "3", 1);
+        term_render_write("03", 2);
     } else if (block->size == 2) {
-        write(STDOUT_FILENO, "2", 1);
+        term_render_write("02", 2);
     } else if (block->size == 1) {
-        write(STDOUT_FILENO, "1", 1);
+        term_render_write("01", 2);
     } else {
-        write(STDOUT_FILENO, " ", 1);
+        term_render_write("  ", 2);
     }
 }
 void term_render() {
-    write(STDOUT_FILENO, "\x1b[1;1H", 6);
+    global.term.buf_size = 0;
+    term_render_write("\x1b[1;1H", 6);
     for (int i = 0; i < global.term.ws.ws_row; i++) {
-        for (int j = 0; j < global.term.ws.ws_col; j++) {
-            term_render_dot(global.camera.x - (global.term.ws.ws_col / 2) + j, global.camera.y + (global.term.ws.ws_row / 2) - i);
+        for (int j = 0; j < global.term.ws.ws_col / 2; j++) {
+            term_render_dot(global.camera.x - (global.term.ws.ws_col / 4) + j, global.camera.y + (global.term.ws.ws_row / 2) - i);
+        }
+        if (global.term.ws.ws_col % 2 == 1) {
+            term_render_write("\x1b[40m", 5);
+            term_render_write(" ", 1);
         }
     }
+    write(STDOUT_FILENO, global.term.buf, global.term.buf_size);
 }
 void term_update() {
     ioctl(STDOUT_FILENO, TIOCGWINSZ, &global.term.ws);
@@ -93,12 +123,11 @@ void global_update() {
     usleep(10000);
 }
 void global_init() {
+    world_init();
     // global.camera = (struct i32_2){world_size / 2, world_size / 2};
     // global.cursor = (struct i32_2){world_size / 2, world_size / 2};
     global.camera = (struct i32_2){0, 0};
     global.cursor = (struct i32_2){0, 0};
-    block_set(10, 3, type_stone, 3);
-    block_set(6, 7, type_stone, 1);
 }
 int main() {
     global_init();
