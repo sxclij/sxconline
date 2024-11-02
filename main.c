@@ -1,7 +1,7 @@
 #include <sys/ioctl.h>
 #include <unistd.h>
 
-#define world_size (1 << 14)
+#define world_size (1 << 12)
 #define chunk_size (1 << 8)
 #define table_type_size (1 << 8)
 #define term_size (1 << 10)
