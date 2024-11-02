@@ -37,7 +37,7 @@ struct term_bit {
 };
 struct term {
     struct winsize ws;
-    char buf[buf_kakkokari_size];
+    char buf[term_buf_size];
     int buf_size;
 };
 struct global {
